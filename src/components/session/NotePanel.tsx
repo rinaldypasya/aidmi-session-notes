@@ -376,11 +376,19 @@ const NoteSpanItem = React.forwardRef<HTMLDivElement, NoteSpanItemProps>(
             ],
           !span.needsConfirmation &&
             !isActive &&
-            (isHovered || isFocused) && ["bg-white/80 border-border/50 shadow-sm"],
+            isFocused && [
+              "bg-indigo-50/80 border-indigo-200/60",
+              "ring-2 ring-indigo-300/40 ring-offset-1",
+              "shadow-sm",
+            ],
           !span.needsConfirmation &&
             !isActive &&
-            !isHovered &&
-            !isFocused && ["bg-white/50 hover:bg-white/80"]
+            !isFocused &&
+            isHovered && ["bg-white/80 border-border/50 shadow-sm"],
+          !span.needsConfirmation &&
+            !isActive &&
+            !isFocused &&
+            !isHovered && ["bg-white/50 hover:bg-white/80"]
         )}
         onClick={onClick}
         onMouseEnter={() => onHover(span.id)}
@@ -411,7 +419,8 @@ const NoteSpanItem = React.forwardRef<HTMLDivElement, NoteSpanItemProps>(
               "flex-1 text-sm leading-relaxed",
               span.needsConfirmation && "text-amber-900",
               !span.needsConfirmation && isActive && "text-foreground font-medium",
-              !span.needsConfirmation && !isActive && "text-foreground/80"
+              !span.needsConfirmation && !isActive && isFocused && "text-foreground font-medium",
+              !span.needsConfirmation && !isActive && !isFocused && "text-foreground/80"
             )}
           >
             {span.text}
