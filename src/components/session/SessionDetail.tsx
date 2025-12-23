@@ -32,7 +32,6 @@ export function SessionDetail({ initialSession }: SessionDetailProps) {
     cancelEditing,
     saveEdit,
   } = useSessionState({
-    transcriptSegments: session.transcriptSegments,
     noteSpans: session.noteSpans,
   });
 

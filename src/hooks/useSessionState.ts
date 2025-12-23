@@ -4,12 +4,10 @@ import { useState, useCallback, useEffect, useMemo } from "react";
 import type { TranscriptSegment, NoteSpan } from "@/types";
 
 interface UseSessionStateProps {
-  transcriptSegments: TranscriptSegment[];
   noteSpans: NoteSpan[];
 }
 
 export function useSessionState({
-  transcriptSegments,
   noteSpans: initialNoteSpans,
 }: UseSessionStateProps) {
   // Active selections
