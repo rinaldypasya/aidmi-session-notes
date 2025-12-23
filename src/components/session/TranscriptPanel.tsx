@@ -25,15 +25,39 @@ export function TranscriptPanel({
   onSegmentClick,
   onSegmentHover,
 }: TranscriptPanelProps) {
-  const activeRef = useRef<HTMLDivElement>(null);
-
   // Scroll to active segment when selection changes
   useEffect(() => {
-    if (activeIds.size > 0 && activeRef.current) {
-      activeRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+    if (activeIds.size > 0) {
+      // Small delay to ensure DOM is updated
+      setTimeout(() => {
+        // Get the first active segment ID
+        const firstActiveId = Array.from(activeIds)[0];
+
+        // Find the element by data attribute
+        const element = document.querySelector(`[data-segment-id="${firstActiveId}"]`) as HTMLElement;
+
+        if (!element) return;
+
+        // Find the scroll container (Radix ScrollArea viewport)
+        const scrollViewport = element.closest('[data-radix-scroll-area-viewport]') as HTMLElement;
+
+        if (!scrollViewport) return;
+
+        // Get element and viewport positions
+        const elementRect = element.getBoundingClientRect();
+        const viewportRect = scrollViewport.getBoundingClientRect();
+
+        // Calculate the scroll offset needed to center the element
+        const currentScrollTop = scrollViewport.scrollTop;
+        const elementTopRelativeToViewport = elementRect.top - viewportRect.top;
+        const scrollOffset = elementTopRelativeToViewport - (viewportRect.height / 2) + (elementRect.height / 2);
+
+        // Smooth scroll to the calculated position
+        scrollViewport.scrollTo({
+          top: currentScrollTop + scrollOffset,
+          behavior: "smooth",
+        });
+      }, 100);
     }
   }, [activeIds]);
 
@@ -65,7 +89,7 @@ export function TranscriptPanel({
             return (
               <motion.div
                 key={segment.id}
-                ref={isActive ? activeRef : null}
+                data-segment-id={segment.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.02, duration: 0.3 }}
