@@ -67,6 +67,7 @@ export function NotePanel({
   onSaveEdit,
 }: NotePanelProps) {
   const activeRef = useRef<HTMLDivElement>(null);
+  const focusedRefs = useRef<Map<number, HTMLDivElement>>(new Map());
 
   // Group note spans by section
   const spansBySection = SOAP_SECTIONS.reduce(
@@ -81,6 +82,33 @@ export function NotePanel({
   const needsConfirmationCount = noteSpans.filter(
     (span) => span.needsConfirmation
   ).length;
+
+  // Scroll to focused note when focusedNoteIndex changes via keyboard navigation
+  useEffect(() => {
+    if (focusedNoteIndex >= 0 && focusedNoteIndex < noteSpans.length) {
+      const element = focusedRefs.current.get(focusedNoteIndex);
+      if (!element) return;
+
+      // Find the scroll container (Radix ScrollArea viewport)
+      const scrollViewport = element.closest('[data-radix-scroll-area-viewport]') as HTMLElement;
+      if (!scrollViewport) return;
+
+      // Get element and viewport positions
+      const elementRect = element.getBoundingClientRect();
+      const viewportRect = scrollViewport.getBoundingClientRect();
+
+      // Calculate the scroll offset needed to center the element
+      const currentScrollTop = scrollViewport.scrollTop;
+      const elementTopRelativeToViewport = elementRect.top - viewportRect.top;
+      const scrollOffset = elementTopRelativeToViewport - (viewportRect.height / 2) + (elementRect.height / 2);
+
+      // Smooth scroll to the calculated position
+      scrollViewport.scrollTo({
+        top: currentScrollTop + scrollOffset,
+        behavior: "smooth",
+      });
+    }
+  }, [focusedNoteIndex, noteSpans.length]);
 
   return (
     <div className="flex h-full flex-col bg-card">
@@ -169,7 +197,16 @@ export function NotePanel({
                         isFocused={isFocused}
                         isEditing={isEditing}
                         isReadOnly={sessionStatus === "signed"}
-                        ref={isActive ? activeRef : null}
+                        ref={(el) => {
+                          if (el) {
+                            focusedRefs.current.set(globalIndex, el);
+                            if (isActive) {
+                              (activeRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+                            }
+                          } else {
+                            focusedRefs.current.delete(globalIndex);
+                          }
+                        }}
                         onClick={() => onNoteSpanClick(span)}
                         onHover={onNoteSpanHover}
                         onStartEditing={onStartEditing}
