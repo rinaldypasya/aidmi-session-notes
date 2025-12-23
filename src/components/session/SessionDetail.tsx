@@ -92,6 +92,7 @@ export function SessionDetail({ initialSession }: SessionDetailProps) {
               hoveredNoteSpanId={hoveredNoteSpanId}
               editingNoteSpanId={editingNoteSpanId}
               focusedNoteIndex={focusedNoteIndex}
+              sessionStatus={session.status}
               onNoteSpanClick={handleNoteSpanClick}
               onNoteSpanHover={handleNoteSpanHover}
               onStartEditing={startEditing}
@@ -109,6 +110,7 @@ export function SessionDetail({ initialSession }: SessionDetailProps) {
             hoveredNoteSpanId={hoveredNoteSpanId}
             editingNoteSpanId={editingNoteSpanId}
             focusedNoteIndex={focusedNoteIndex}
+            sessionStatus={session.status}
             onNoteSpanClick={handleNoteSpanClick}
             onNoteSpanHover={handleNoteSpanHover}
             onStartEditing={startEditing}

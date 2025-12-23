@@ -24,6 +24,7 @@ interface NotePanelProps {
   hoveredNoteSpanId: string | null;
   editingNoteSpanId: string | null;
   focusedNoteIndex: number;
+  sessionStatus: string;
   onNoteSpanClick: (noteSpan: NoteSpan) => void;
   onNoteSpanHover: (noteSpanId: string | null) => void;
   onStartEditing: (noteSpanId: string) => void;
@@ -58,6 +59,7 @@ export function NotePanel({
   hoveredNoteSpanId,
   editingNoteSpanId,
   focusedNoteIndex,
+  sessionStatus,
   onNoteSpanClick,
   onNoteSpanHover,
   onStartEditing,
@@ -166,6 +168,7 @@ export function NotePanel({
                         isHovered={isHovered}
                         isFocused={isFocused}
                         isEditing={isEditing}
+                        isReadOnly={sessionStatus === "signed"}
                         ref={isActive ? activeRef : null}
                         onClick={() => onNoteSpanClick(span)}
                         onHover={onNoteSpanHover}
@@ -210,6 +213,7 @@ interface NoteSpanItemProps {
   isHovered: boolean;
   isFocused: boolean;
   isEditing: boolean;
+  isReadOnly: boolean;
   onClick: () => void;
   onHover: (noteSpanId: string | null) => void;
   onStartEditing: (noteSpanId: string) => void;
@@ -225,6 +229,7 @@ const NoteSpanItem = React.forwardRef<HTMLDivElement, NoteSpanItemProps>(
       isHovered,
       isFocused,
       isEditing,
+      isReadOnly,
       onClick,
       onHover,
       onStartEditing,
@@ -376,22 +381,24 @@ const NoteSpanItem = React.forwardRef<HTMLDivElement, NoteSpanItemProps>(
           </p>
 
           {/* Edit button */}
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={(e) => {
-              e.stopPropagation();
-              onStartEditing(span.id);
-            }}
-            className={cn(
-              "h-7 w-7 flex-shrink-0 opacity-0 transition-opacity",
-              "group-hover:opacity-100",
-              isActive && "opacity-100"
-            )}
-            aria-label="Edit note"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
+          {!isReadOnly && (
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={(e) => {
+                e.stopPropagation();
+                onStartEditing(span.id);
+              }}
+              className={cn(
+                "h-7 w-7 flex-shrink-0 opacity-0 transition-opacity",
+                "group-hover:opacity-100",
+                isActive && "opacity-100"
+              )}
+              aria-label="Edit note"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </Button>
+          )}
         </div>
 
         {/* Citation count badge */}
